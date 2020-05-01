@@ -8,12 +8,12 @@ const Hapi = require('@hapi/hapi');
 const fs = require('fs');
 
 const server = Hapi.server({
-    // port: process.env.PORT || 3000,
-    port: 3443,
-    tls: {
-        key: fs.readFileSync('keys/private/webserver.key'),
-        cert: fs.readFileSync('keys/webserver.crt')
-    }
+    port: process.env.PORT || 3000,
+    // port: 3443,
+    // tls: {
+    //     key: fs.readFileSync('keys/private/webserver.key'),
+    //     cert: fs.readFileSync('keys/webserver.crt')
+    // }
 });
 
 // db.js creates a connection to the mongo database
