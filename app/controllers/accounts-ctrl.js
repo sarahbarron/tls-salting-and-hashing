@@ -57,15 +57,17 @@ const Accounts = {
         // Joi Validation of fields
         validate: {
             payload: {
-                firstName: Joi.string().required(),
-                lastName: Joi.string().required(),
-                address: Joi.string().required(),
-                telephone: Joi.number().required(),
+                firstName: Joi.string().alphanum().regex(/^[A-Z]/).min(3).max(15).required(),
+                lastName: Joi.string().alphanum().regex(/[A-Z]/).min(3).max(15).required(),
+                dob: Joi.date().greater('1920-01-01').less('now').required(),
+                address: Joi.string().max(100).required().regex(/^\d|[A-Z][\da-zA-Z\s,]{10,100}$/),
+                telephone: Joi.string().required().regex(/^[0-9]{3}\s?[0-9]{5,7}$/),
                 email: Joi.string()
+                    .max(30)
                     .email()
                     .required(),
-                medical: Joi.string().required(),
-                password: Joi.string().required(),
+                medical: Joi.string().required().max(100).regex(/^\d|[a-zA-Z]?[\da-zA-Z\s,]{0,100}$/),
+                password: Joi.string().required().min(8).max(30),
             },
             options: {
                 abortEarly: false
@@ -96,6 +98,7 @@ const Accounts = {
                 const newUser = new User({
                     firstName: payload.firstName,
                     lastName: payload.lastName,
+                    dob: payload.dob,
                     address: payload.address,
                     telephone: payload.telephone,
                     email: payload.email,

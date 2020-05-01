@@ -26,7 +26,14 @@ module.exports = [
     {method: 'POST',path: '/view-user/{id}', config: Admin.viewUser},
 
 
-
+    // // XSS using URL parameter
+    // {
+    //     method: 'GET',
+    //     path: '/url-xss-attack/{user}',
+    //     handler: function (request, h){
+    //         return 'Welcome '+ request.params.user;
+    //     }
+    // },
 
     // Route to public images and allow them to be viewed by everybody
     {

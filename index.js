@@ -34,7 +34,14 @@ async function init() {
     await server.register(require('@hapi/inert'));
     await server.register(require('@hapi/vision'));
     await server.register(require('@hapi/cookie'));
-
+    await  server.register({
+        plugin: require('disinfect'),
+        options: {
+            disinfectQuery: true,
+            disinfectParams: true,
+            disinfectPayload: true
+        }
+    });
 
     // setup the paths to views, layouts and partials &
     // set the templating engine to handlebars
