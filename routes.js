@@ -1,5 +1,5 @@
 const Accounts = require('./app/controllers/accounts-ctrl');
-const Admin = require('./app/controllers/admin-ctrl');
+
 
 
 module.exports = [
@@ -12,28 +12,14 @@ module.exports = [
     {method: 'POST', path: '/login', config: Accounts.login},
     {method: 'GET', path: '/home', config: Accounts.home},
 
-
-
-    // routes for settings
-    {method: 'GET', path: '/settings', config: Accounts.showSettings},
-    {method: 'POST', path: '/settings', config: Accounts.updateSettings},
-
-
-    // admin
-    {method: 'GET',path: '/admin-dashboard', config: Admin.adminDashboard},
-    {method: 'GET',path: '/delete-user/{id}', config: Admin.deleteUser},
-    {method: 'GET',path: '/view-user/{id}', config: Admin.viewUser},
-    {method: 'POST',path: '/view-user/{id}', config: Admin.viewUser},
-
-
-    // // XSS using URL parameter
-    // {
-    //     method: 'GET',
-    //     path: '/url-xss-attack/{user}',
-    //     handler: function (request, h){
-    //         return 'Welcome '+ request.params.user;
-    //     }
-    // },
+      // XSS using URL parameter
+    {
+        method: 'GET',
+        path: '/url-xss-attack/{user}',
+        handler: function (request, h){
+            return 'Welcome '+ request.params.user;
+        }
+    },
 
     // Route to public images and allow them to be viewed by everybody
     {

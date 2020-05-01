@@ -153,9 +153,10 @@ const Accounts = {
         validate: {
             payload: {
                 email: Joi.string()
-                    .email()
-                    .required(),
-                password: Joi.string().required()
+                  .max(30)
+                  .email()
+                  .required(),
+                password: Joi.string().required().min(8).max(30),
             },
             options: {
                 abortEarly: false
