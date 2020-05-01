@@ -63,7 +63,8 @@ async function init() {
         cookie: {
             name: 'cookie',
             password: process.env.COOKIE_PASSWORD,
-            isSecure: false
+            isSecure: true,
+            isHttpOnly: true
         }
     });
 
