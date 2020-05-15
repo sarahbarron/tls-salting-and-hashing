@@ -5,7 +5,8 @@ const Joi = require('@hapi/joi');
 const Utils = require('../utils/isAdmin');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-
+const Crypto=require("crypto-js");
+const CryptoSecretKey = process.env.CRYPTO_SECRET_KEY;
 /*
 Accounts Controller contains controllers for signup, login,
 register and settings
@@ -27,8 +28,11 @@ const Accounts = {
         handler: async function (request, h) {
             const id = request.auth.credentials.id;
             const user = await User.findById(id).lean();
+            const firstName = Crypto.AES.decrypt(user.firstName, CryptoSecretKey).toString(Crypto.enc.Utf8);
+            const medical = Crypto.AES.decrypt(user.medical, CryptoSecretKey).toString(Crypto.enc.Utf8);
             return h.view('home', {
-                user: user,
+                firstName: firstName,
+                medical: medical,
                 title: 'Apex Gym Authenticated'
             });
         }
@@ -67,7 +71,7 @@ const Accounts = {
                     .email()
                     .required(),
                 medical: Joi.string().required().max(100).regex(/^\d|[a-zA-Z]?[\da-zA-Z\s,]{0,100}$/),
-                password: Joi.string().required().min(8).max(30),
+                password: Joi.string().required().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,30}$/),
             },
             options: {
                 abortEarly: false
@@ -96,15 +100,14 @@ const Accounts = {
                 const hash = await bcrypt.hash(payload.password, saltRounds);
 
                 const newUser = new User({
-                    firstName: payload.firstName,
-                    lastName: payload.lastName,
-                    dob: payload.dob,
-                    address: payload.address,
-                    telephone: payload.telephone,
+                    firstName: Crypto.AES.encrypt(payload.firstName, CryptoSecretKey),
+                    lastName: Crypto.AES.encrypt(payload.lastName, CryptoSecretKey),
+                    dob: Crypto.AES.encrypt(JSON.stringify(payload.dob), CryptoSecretKey).toString(),
+                    address: Crypto.AES.encrypt(payload.address, CryptoSecretKey),
+                    telephone: Crypto.AES.encrypt(JSON.stringify(payload.telephone), CryptoSecretKey).toString(),
                     email: payload.email,
-                    medical: payload.medical,
+                    medical: Crypto.AES.encrypt(payload.medical, CryptoSecretKey),
                     password: hash,
-                    scope: ['user']
                 });
 
                 user = await newUser.save();
@@ -156,7 +159,7 @@ const Accounts = {
                   .max(30)
                   .email()
                   .required(),
-                password: Joi.string().required().min(8).max(30),
+                password: Joi.string().required().max(30),
             },
             options: {
                 abortEarly: false
@@ -178,6 +181,7 @@ const Accounts = {
                 password
             } = request.payload;
             try {
+
                 let user = await User.findByEmail(email);
                 if (!user) {
                     const message = 'Email address is not registered';
@@ -277,12 +281,14 @@ const Accounts = {
                 const userEdit = request.payload;
                 const id = request.auth.credentials.id;
                 const user = await User.findById(id);
-                user.firstName = userEdit.firstName;
-                user.lastName = userEdit.lastName;
-                user.address = userEdit.address;
-                user.telephone = userEdit.telephone;
-                user.email = userEdit.email;
-                user.medical = userEdit.medical;
+
+                user.firstName = Crypto.AES.encrypt(userEdit.firstName, CryptoSecretKey);
+                user.lastName = Crypto.AES.encrypt(userEdit.lastName, CryptoSecretKey);
+                user.dob = Crypto.AES.encrypt(JSON.stringify(userEdit.dob), CryptoSecretKey).toString();
+                user.address = Crypto.AES.encrypt(userEdit.address, CryptoSecretKey);
+                user.telephone = Crypto.AES.encrypt(JSON.stringify(userEdit.telephone), CryptoSecretKey).toString();
+                user.email = payload.email;
+                user.medical = Crypto.AES.encrypt(userEdit.medical, CryptoSecretKey);
                 const hash = await bcrypt.hash(userEdit.password, saltRounds);
                 user.password = hash;
                 await user.save();

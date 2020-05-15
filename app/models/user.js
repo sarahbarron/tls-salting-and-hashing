@@ -6,13 +6,12 @@ User Schema to store a users name,email,password, number of poi's
  */
 const Mongoose = require('mongoose');
 const Schema = Mongoose.Schema;
-const Boom = require('@hapi/boom');
 const bcrypt = require('bcrypt')
 const userSchema = new Schema({
     firstName: String,
     lastName: String,
     address: String,
-    telephone: Number,
+    telephone: String,
     email: String,
     medical: String,
     password: String,
